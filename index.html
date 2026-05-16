@@ -14,47 +14,77 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-–glass-white: rgba(255,255,255,0.08);
-–glass-border: rgba(255,255,255,0.15);
-–glass-shine: rgba(255,255,255,0.25);
-–accent: #a8d8ff;
-–accent2: #d4b8ff;
-–text: #f0f4ff;
-–text-dim: rgba(240,244,255,0.45);
-–bg-deep: #060a14;
+--glass-white: rgba(255,255,255,0.08);
+--glass-border: rgba(255,255,255,0.15);
+--glass-shine: rgba(255,255,255,0.25);
+--accent: #a8d8ff;
+--accent2: #d4b8ff;
+--text: #f0f4ff;
+--text-dim: rgba(240,244,255,0.62);
+--bg-deep: #060a14;
 }
 
-html { scroll-behavior: auto; }
+html {
+  scroll-behavior: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 
 body {
-font-family: ‘Outfit’, sans-serif;
-background: var(–bg-deep);
-color: var(–text);
-overflow-x: hidden;
-cursor: none;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 400;
+  font-synthesis: none;
+  background: var(--bg-deep);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: auto;
 }
 
-/* CUSTOM CURSOR */
+/* CUSTOM CURSOR — nur feine Zeiger: sonst normale System-Maus */
 #cursor {
-width: 10px; height: 10px;
-background: var(–accent);
-border-radius: 50%;
-position: fixed; top: 0; left: 0;
-pointer-events: none;
-z-index: 9999;
-transform: translate(-50%,-50%);
-transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
-mix-blend-mode: screen;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 0 22px rgba(168, 216, 255, 0.65);
+  visibility: hidden;
 }
 #cursor-ring {
-width: 36px; height: 36px;
-border: 1px solid rgba(168,216,255,0.4);
-border-radius: 50%;
-position: fixed; top: 0; left: 0;
-pointer-events: none;
-z-index: 9998;
-transform: translate(-50%,-50%);
-transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), width 0.4s, height 0.4s;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(168, 216, 255, 0.55);
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  box-shadow: 0 0 28px rgba(168, 216, 255, 0.15);
+  visibility: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.aura-cursor { cursor: none; }
+  body.aura-cursor #cursor,
+  body.aura-cursor #cursor-ring { visibility: visible; }
+  body.aura-cursor .btn-primary,
+  body.aura-cursor .btn-ghost,
+  body.aura-cursor .nav-cta,
+  body.aura-cursor .nav-logo,
+  body.aura-cursor .nav-links a { cursor: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { cursor: auto !important; }
+  body.aura-cursor { cursor: auto !important; }
+  #cursor, #cursor-ring { display: none !important; }
 }
 
 /* BACKGROUND */
@@ -74,17 +104,19 @@ animation: drift 20s infinite alternate ease-in-out;
 .orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, #0a2a4a, transparent 70%); bottom: 10%; left: 20%; animation-duration: 25s; animation-delay: -10s; }
 @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px, 30px) scale(1.1); } }
 
-/* NOISE OVERLAY */
+/* NOISE OVERLAY — weich, weniger „Rauschen/Glitch“ */
 body::after {
-content: ‘’;
-position: fixed; inset: 0;
-background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.04’/%3E%3C/svg%3E”);
-pointer-events: none; z-index: 1; opacity: 0.4;
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.22;
 }
 
 /* SMOOTH SCROLL WRAPPER */
 #smooth-wrapper { overflow: hidden; }
-#smooth-content { }
 
 /* NAV */
 nav {
@@ -94,26 +126,26 @@ display: flex; justify-content: space-between; align-items: center;
 backdrop-filter: blur(20px) saturate(1.5);
 -webkit-backdrop-filter: blur(20px) saturate(1.5);
 background: rgba(6,10,20,0.4);
-border-bottom: 1px solid var(–glass-border);
+border-bottom: 1px solid var(--glass-border);
 }
 .nav-logo {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: 1.6rem; font-weight: 300; letter-spacing: 0.15em;
-color: var(–text);
+color: var(--text);
 text-decoration: none;
 }
-.nav-logo span { color: var(–accent); }
+.nav-logo span { color: var(--accent); }
 .nav-links { display: flex; gap: 32px; list-style: none; }
 .nav-links a {
 font-size: 0.75rem; font-weight: 300; letter-spacing: 0.15em;
-text-transform: uppercase; color: var(–text-dim);
+text-transform: uppercase; color: var(--text-dim);
 text-decoration: none; transition: color 0.3s;
 }
-.nav-links a:hover { color: var(–accent); }
+.nav-links a:hover { color: var(--accent); }
 .nav-cta {
 font-size: 0.72rem; font-weight: 400; letter-spacing: 0.12em;
-text-transform: uppercase; color: var(–bg-deep);
-background: var(–accent);
+text-transform: uppercase; color: var(--bg-deep);
+background: var(--accent);
 padding: 10px 24px; border-radius: 100px;
 text-decoration: none; transition: background 0.3s, transform 0.2s;
 }
@@ -131,24 +163,25 @@ text-align: center;
 padding: 120px 24px 60px;
 }
 .hero-eyebrow {
-font-family: ‘Geist Mono’, monospace;
+font-family: 'Geist Mono', monospace;
 font-size: 0.68rem; letter-spacing: 0.3em;
-text-transform: uppercase; color: var(–accent);
+text-transform: uppercase; color: var(--accent);
 opacity: 0; transform: translateY(20px);
 margin-bottom: 20px;
 }
 .hero-title {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: clamp(4rem, 10vw, 9rem);
-font-weight: 300; line-height: 1;
+font-weight: 300; line-height: 1.02;
 letter-spacing: -0.02em;
+text-wrap: balance;
 opacity: 0; transform: translateY(40px);
 }
-.hero-title em { font-style: italic; color: var(–accent2); }
+.hero-title em { font-style: italic; color: var(--accent2); }
 .hero-subtitle {
 font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-font-weight: 200; color: var(–text-dim);
-max-width: 520px; line-height: 1.8;
+font-weight: 300; color: var(--text-dim);
+max-width: 520px; line-height: 1.75;
 margin-top: 24px;
 opacity: 0; transform: translateY(30px);
 }
@@ -161,29 +194,48 @@ padding: 16px 40px; border-radius: 100px;
 background: linear-gradient(135deg, rgba(168,216,255,0.9), rgba(212,184,255,0.7));
 color: #060a14; font-size: 0.8rem; font-weight: 500;
 letter-spacing: 0.08em; text-transform: uppercase;
-text-decoration: none; border: none; cursor: none;
+text-decoration: none; border: none; cursor: pointer;
 transition: transform 0.3s, box-shadow 0.3s;
 box-shadow: 0 8px 40px rgba(168,216,255,0.25);
 }
 .btn-primary:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 16px 60px rgba(168,216,255,0.35); }
 .btn-ghost {
 padding: 16px 32px; border-radius: 100px;
-background: var(–glass-white);
-border: 1px solid var(–glass-border);
+background: var(--glass-white);
+border: 1px solid var(--glass-border);
 backdrop-filter: blur(20px);
-color: var(–text); font-size: 0.8rem; font-weight: 300;
+color: var(--text); font-size: 0.8rem; font-weight: 300;
 letter-spacing: 0.08em; text-transform: uppercase;
-text-decoration: none; cursor: none;
+text-decoration: none; cursor: pointer;
 transition: border-color 0.3s, background 0.3s;
 }
-.btn-ghost:hover { border-color: var(–accent); background: rgba(168,216,255,0.08); }
+.btn-ghost:hover { border-color: var(--accent); background: rgba(168,216,255,0.08); }
 
 /* PHONE MOCKUP */
+.hero-phone-slot {
+  margin-top: 80px;
+  width: 260px;
+  height: 530px;
+  pointer-events: none;
+}
 .hero-phone {
-margin-top: 80px;
-position: relative;
-display: flex; justify-content: center;
-opacity: 0; transform: translateY(60px) scale(0.95);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 530px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1) 0.4s;
+}
+.hero-phone.is-ready {
+  opacity: 1;
 }
 .phone-glow {
 position: absolute; top: 50%; left: 50%;
@@ -239,12 +291,12 @@ display: flex; align-items: center; justify-content: center;
 gap: 6px;
 }
 .phone-notch::before {
-content: ‘’; width: 8px; height: 8px;
+content: ''; width: 8px; height: 8px;
 background: rgba(168,216,255,0.3);
 border-radius: 50%;
 }
 .phone-notch::after {
-content: ‘’; width: 40px; height: 6px;
+content: ''; width: 40px; height: 6px;
 background: rgba(30,30,50,0.9);
 border-radius: 4px;
 }
@@ -264,14 +316,14 @@ backdrop-filter: blur(10px);
 .ps-card.tall { height: 100px; }
 .ps-card.wide { flex: 2; }
 .ps-card.accent-card { background: linear-gradient(135deg, rgba(168,216,255,0.15), rgba(212,184,255,0.08)); border-color: rgba(168,216,255,0.2); }
-.ps-dot { width: 20px; height: 4px; background: var(–accent); border-radius: 2px; margin-bottom: 6px; opacity: 0.7; }
+.ps-dot { width: 20px; height: 4px; background: var(--accent); border-radius: 2px; margin-bottom: 6px; opacity: 0.7; }
 .ps-line { height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 4px; }
 .ps-line.short { width: 60%; }
 .ps-circle { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, rgba(168,216,255,0.3), rgba(212,184,255,0.2)); border: 1px solid rgba(168,216,255,0.3); }
 
 /* Phone side buttons */
 .phone-shell::before {
-content: ‘’;
+content: '';
 position: absolute; right: -3px; top: 100px;
 width: 3px; height: 60px;
 background: rgba(255,255,255,0.15);
@@ -279,7 +331,7 @@ border-radius: 0 4px 4px 0;
 box-shadow: 0 70px 0 rgba(255,255,255,0.15);
 }
 .phone-shell::after {
-content: ‘’;
+content: '';
 position: absolute; left: -3px; top: 120px;
 width: 3px; height: 40px;
 background: rgba(255,255,255,0.15);
@@ -303,13 +355,13 @@ display: flex; flex-direction: column; align-items: center; gap: 8px;
 opacity: 0;
 }
 .scroll-hint span {
-font-family: ‘Geist Mono’, monospace;
+font-family: 'Geist Mono', monospace;
 font-size: 0.6rem; letter-spacing: 0.2em;
-text-transform: uppercase; color: var(–text-dim);
+text-transform: uppercase; color: var(--text-dim);
 }
 .scroll-line {
 width: 1px; height: 50px;
-background: linear-gradient(to bottom, var(–accent), transparent);
+background: linear-gradient(to bottom, var(--accent), transparent);
 animation: scrollpulse 2s ease-in-out infinite;
 }
 @keyframes scrollpulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
@@ -317,18 +369,19 @@ animation: scrollpulse 2s ease-in-out infinite;
 /* ── FEATURES ── */
 #features { padding: 140px 48px; }
 .section-label {
-font-family: ‘Geist Mono’, monospace;
+font-family: 'Geist Mono', monospace;
 font-size: 0.65rem; letter-spacing: 0.3em;
-text-transform: uppercase; color: var(–accent);
+text-transform: uppercase; color: var(--accent);
 margin-bottom: 16px;
 }
 .section-title {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: clamp(2.8rem, 5vw, 5rem);
-font-weight: 300; line-height: 1.1;
-max-width: 700px;
+font-weight: 300; line-height: 1.12;
+max-width: 720px;
+text-wrap: balance;
 }
-.section-title em { font-style: italic; color: var(–accent2); }
+.section-title em { font-style: italic; color: var(--accent2); }
 .features-grid {
 display: grid;
 grid-template-columns: repeat(3, 1fr);
@@ -338,7 +391,7 @@ gap: 20px; margin-top: 70px;
 padding: 40px 32px;
 border-radius: 28px;
 background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
-border: 1px solid var(–glass-border);
+border: 1px solid var(--glass-border);
 backdrop-filter: blur(30px) saturate(1.5);
 -webkit-backdrop-filter: blur(30px) saturate(1.5);
 position: relative; overflow: hidden;
@@ -346,9 +399,9 @@ transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), border-color 0.3s;
 opacity: 0; transform: translateY(40px);
 }
 .feat-card::before {
-content: ‘’;
+content: '';
 position: absolute; top: 0; left: 0; right: 0; height: 1px;
-background: linear-gradient(90deg, transparent, var(–glass-shine), transparent);
+background: linear-gradient(90deg, transparent, var(--glass-shine), transparent);
 }
 .feat-card:hover {
 transform: translateY(-8px) scale(1.01);
@@ -363,20 +416,21 @@ display: flex; align-items: center; justify-content: center;
 font-size: 1.4rem; margin-bottom: 24px;
 }
 .feat-title {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: 1.6rem; font-weight: 400; margin-bottom: 12px;
 }
 .feat-desc {
-font-size: 0.85rem; font-weight: 200; line-height: 1.8;
-color: var(–text-dim);
+font-size: 0.875rem; font-weight: 300; line-height: 1.75;
+color: var(--text-dim);
 }
 .feat-chip {
 display: inline-block; margin-top: 20px;
 padding: 6px 14px; border-radius: 100px;
 background: rgba(168,216,255,0.1);
 border: 1px solid rgba(168,216,255,0.2);
-font-family: ‘Geist Mono’, monospace;
-font-size: 0.65rem; letter-spacing: 0.1em; color: var(–accent);
+font-family: 'Geist Mono', monospace;
+font-size: 0.65rem; letter-spacing: 0.1em; color: var(--accent);
+font-variant-numeric: tabular-nums;
 }
 .feat-card.large .feat-inner {
 display: flex; gap: 40px; align-items: flex-start;
@@ -394,28 +448,11 @@ font-size: 3rem;
 #specs { padding: 120px 48px; }
 .specs-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
 .specs-phone-side { display: flex; justify-content: center; }
-.phone-shell-2 {
-width: 220px; height: 450px;
-border-radius: 44px;
-background: linear-gradient(160deg,
-rgba(255,255,255,0.16) 0%,
-rgba(255,255,255,0.03) 50%,
-rgba(212,184,255,0.08) 100%
-);
-border: 1.5px solid rgba(255,255,255,0.2);
-backdrop-filter: blur(40px);
-box-shadow:
-0 30px 100px rgba(0,0,0,0.5),
-inset 0 1px 0 rgba(255,255,255,0.25),
-0 0 60px rgba(212,184,255,0.1);
-position: relative; overflow: hidden;
-transform: rotate(5deg);
-}
-.phone-shell-2::before {
-content: ‘’;
-position: absolute; inset: 0;
-background: linear-gradient(160deg, rgba(255,255,255,0.1) 0%, transparent 60%);
-border-radius: 44px;
+.phone-target {
+  width: 260px;
+  height: 530px;
+  border-radius: 44px;
+  pointer-events: none;
 }
 .specs-list { display: flex; flex-direction: column; gap: 0; }
 .spec-row {
@@ -425,14 +462,15 @@ border-bottom: 1px solid rgba(255,255,255,0.06);
 opacity: 0; transform: translateX(-20px);
 }
 .spec-name {
-font-size: 0.8rem; font-weight: 300; letter-spacing: 0.05em; color: var(–text-dim);
+font-size: 0.8rem; font-weight: 300; letter-spacing: 0.05em; color: var(--text-dim);
 }
 .spec-value {
-font-family: ‘Geist Mono’, monospace;
-font-size: 0.9rem; color: var(–text);
+font-family: 'Geist Mono', monospace;
+font-size: 0.9rem; color: var(--text);
 text-align: right;
+font-variant-numeric: tabular-nums;
 }
-.spec-value span { color: var(–accent); }
+.spec-value span { color: var(--accent); }
 
 /* ── TESTIMONIAL / QUOTE ── */
 #quote-section { padding: 140px 48px; text-align: center; }
@@ -441,36 +479,36 @@ max-width: 900px; margin: 0 auto;
 padding: 70px;
 border-radius: 40px;
 background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(168,216,255,0.03) 100%);
-border: 1px solid var(–glass-border);
+border: 1px solid var(--glass-border);
 backdrop-filter: blur(40px) saturate(1.5);
 -webkit-backdrop-filter: blur(40px) saturate(1.5);
 position: relative; overflow: hidden;
 opacity: 0; transform: scale(0.95);
 }
 .quote-glass::before {
-content: ‘’;
+content: '';
 position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
-background: linear-gradient(90deg, transparent, var(–glass-shine), transparent);
+background: linear-gradient(90deg, transparent, var(--glass-shine), transparent);
 }
 .quote-mark {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: 7rem; line-height: 0.5;
-color: var(–accent); opacity: 0.3;
+color: var(--accent); opacity: 0.3;
 margin-bottom: 20px; display: block;
 }
 .quote-text {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: clamp(1.6rem, 2.5vw, 2.4rem);
 font-weight: 300; font-style: italic;
-line-height: 1.5; color: var(–text);
+line-height: 1.5; color: var(--text);
 margin-bottom: 32px;
 }
 .quote-author {
-font-family: ‘Geist Mono’, monospace;
+font-family: 'Geist Mono', monospace;
 font-size: 0.65rem; letter-spacing: 0.25em;
-text-transform: uppercase; color: var(–text-dim);
+text-transform: uppercase; color: var(--text-dim);
 }
-.stars { color: var(–accent); margin-bottom: 16px; font-size: 1rem; letter-spacing: 4px; }
+.stars { color: var(--accent); margin-bottom: 16px; font-size: 1rem; letter-spacing: 4px; }
 
 /* ── CTA FINAL ── */
 #cta-final {
@@ -478,24 +516,24 @@ padding: 140px 48px;
 text-align: center;
 }
 .cta-title {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: clamp(3.5rem, 8vw, 8rem);
 font-weight: 300; line-height: 1; letter-spacing: -0.02em;
 opacity: 0; transform: translateY(40px);
 }
-.cta-title em { font-style: italic; color: var(–accent); }
+.cta-title em { font-style: italic; color: var(--accent); }
 .cta-sub {
-font-size: 0.9rem; font-weight: 200; color: var(–text-dim);
+font-size: 0.9rem; font-weight: 300; color: var(--text-dim);
 margin-top: 20px; margin-bottom: 48px;
 opacity: 0; transform: translateY(20px);
 }
 .cta-actions { opacity: 0; transform: translateY(20px); }
 .price-tag {
-font-family: ‘Geist Mono’, monospace;
+font-family: 'Geist Mono', monospace;
 font-size: 0.8rem; letter-spacing: 0.1em;
-color: var(–text-dim); margin-top: 24px;
+color: var(--text-dim); margin-top: 24px;
 }
-.price-tag strong { color: var(–text); font-weight: 400; }
+.price-tag strong { color: var(--text); font-weight: 400; }
 
 /* ── FOOTER ── */
 footer {
@@ -505,12 +543,12 @@ display: flex; justify-content: space-between; align-items: center;
 position: relative; z-index: 2;
 }
 .footer-logo {
-font-family: ‘Cormorant Garamond’, serif;
+font-family: 'Cormorant Garamond', serif;
 font-size: 1.2rem; font-weight: 300; letter-spacing: 0.15em;
 }
-.footer-logo span { color: var(–accent); }
+.footer-logo span { color: var(--accent); }
 .footer-copy {
-font-size: 0.7rem; font-weight: 200; color: var(–text-dim);
+font-size: 0.7rem; font-weight: 300; color: var(--text-dim);
 letter-spacing: 0.08em;
 }
 
@@ -528,6 +566,20 @@ nav { padding: 20px 24px; }
 .quote-glass { padding: 40px 24px; }
 #cta-final { padding: 80px 24px; }
 footer { flex-direction: column; gap: 12px; text-align: center; }
+
+/* Mobile: Floating-Effekt aus, Handy steht klassisch im Hero */
+.hero-phone {
+  position: relative;
+  top: auto;
+  left: auto;
+  z-index: 2;
+  opacity: 1;
+  transform: none !important;
+  transition: none;
+  margin-top: 60px;
+}
+.hero-phone-slot { display: none; }
+.phone-target { display: none; }
 }
 </style>
 
@@ -573,9 +625,11 @@ footer { flex-direction: column; gap: 12px; text-align: center; }
     <a href="#features" class="btn-ghost">Mehr erfahren</a>
   </div>
 
-  <!-- Phone Mockup -->
+  <!-- Layout-Platzhalter für das frei fliegende Handy (Desktop) -->
+  <div class="hero-phone-slot" aria-hidden="true"></div>
 
-  <div class="hero-phone">
+  <!-- Frei fliegendes Handy: Desktop fixed via JS, Mobile in Flow -->
+  <div class="hero-phone" aria-hidden="true">
     <div class="phone-glow"></div>
     <div class="phone-shell">
       <div class="phone-shine"></div>
@@ -646,35 +700,33 @@ footer { flex-direction: column; gap: 12px; text-align: center; }
       </div>
     </div>
 
-```
-<div class="feat-card">
-  <div class="feat-icon">⚡</div>
-  <h3 class="feat-title">Quantum X Chip</h3>
-  <p class="feat-desc">3nm Architektur mit 16-Kern neuronaler Engine — schneller als alles, was du je in der Hand gehalten hast.</p>
-  <span class="feat-chip">16 × NPU Kerne</span>
-</div>
+    <div class="feat-card">
+      <div class="feat-icon">⚡</div>
+      <h3 class="feat-title">Quantum X Chip</h3>
+      <p class="feat-desc">3nm Architektur mit 16-Kern neuronaler Engine — schneller als alles, was du je in der Hand gehalten hast.</p>
+      <span class="feat-chip">16 × NPU Kerne</span>
+    </div>
 
-<div class="feat-card">
-  <div class="feat-icon">🔋</div>
-  <h3 class="feat-title">72h Akkulaufzeit</h3>
-  <p class="feat-desc">Adaptive Energiesteuerung lernt deine Nutzung und optimiert sich in Echtzeit für maximale Ausdauer.</p>
-  <span class="feat-chip">6200 mAh · 120W</span>
-</div>
+    <div class="feat-card">
+      <div class="feat-icon">🔋</div>
+      <h3 class="feat-title">72h Akkulaufzeit</h3>
+      <p class="feat-desc">Adaptive Energiesteuerung lernt deine Nutzung und optimiert sich in Echtzeit für maximale Ausdauer.</p>
+      <span class="feat-chip">6200 mAh · 120W</span>
+    </div>
 
-<div class="feat-card">
-  <div class="feat-icon">✦</div>
-  <h3 class="feat-title">Liquid Glass Display</h3>
-  <p class="feat-desc">6,9" Micro-OLED mit 4K-Auflösung, 144Hz ProMotion und 2.500 Nits Helligkeit. Ein Fenster in eine andere Welt.</p>
-  <span class="feat-chip">4K · 144Hz · HDR∞</span>
-</div>
+    <div class="feat-card">
+      <div class="feat-icon">✦</div>
+      <h3 class="feat-title">Liquid Glass Display</h3>
+      <p class="feat-desc">6,9" Micro-OLED mit 4K-Auflösung, 144Hz ProMotion und 2.500 Nits Helligkeit. Ein Fenster in eine andere Welt.</p>
+      <span class="feat-chip">4K · 144Hz · HDR∞</span>
+    </div>
 
-<div class="feat-card">
-  <div class="feat-icon">🛡</div>
-  <h3 class="feat-title">AuraShield Security</h3>
-  <p class="feat-desc">Unter-Display Fingerabdrucksensor der nächsten Generation mit 3D-Gesichtserkennung und Quantum-Verschlüsselung.</p>
-  <span class="feat-chip">AES-256 · 0.2ms</span>
-</div>
-```
+    <div class="feat-card">
+      <div class="feat-icon">🛡</div>
+      <h3 class="feat-title">AuraShield Security</h3>
+      <p class="feat-desc">Unter-Display Fingerabdrucksensor der nächsten Generation mit 3D-Gesichtserkennung und Quantum-Verschlüsselung.</p>
+      <span class="feat-chip">AES-256 · 0.2ms</span>
+    </div>
 
   </div>
 </section>
@@ -722,7 +774,7 @@ footer { flex-direction: column; gap: 12px; text-align: center; }
       </div>
     </div>
     <div class="specs-phone-side">
-      <div class="phone-shell-2"></div>
+      <div class="phone-target" aria-hidden="true"></div>
     </div>
   </div>
 </section>
@@ -835,35 +887,46 @@ gsap.ticker.add((time) => {
 });
 gsap.ticker.lagSmoothing(0);
 
-// ── CURSOR
+// ── CURSOR (GSAP: Zentrierung über xPercent/yPercent, kein Konflikt mit translate)
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
+let mx = window.innerWidth / 2;
+let my = window.innerHeight / 2;
+let rx = mx;
+let ry = my;
 
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  gsap.to(cursor, { x: mx, y: my, duration: 0.1 });
-});
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function animateRing() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
-  ring.style.left = rx + 'px';
-  ring.style.top = ry + 'px';
-  requestAnimationFrame(animateRing);
+if (finePointer && !reduceMotion) {
+  document.body.classList.add('aura-cursor');
+  gsap.set([cursor, ring], { xPercent: -50, yPercent: -50, x: mx, y: my });
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    gsap.to(cursor, { x: mx, y: my, duration: 0.12, ease: 'power2.out', overwrite: 'auto' });
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.14;
+    ry += (my - ry) * 0.14;
+    gsap.set(ring, { x: rx, y: ry });
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      gsap.to(cursor, { scale: 2.4, duration: 0.25, ease: 'power2.out' });
+      gsap.to(ring, { scale: 1.35, opacity: 0.55, duration: 0.25, ease: 'power2.out' });
+    });
+    el.addEventListener('mouseleave', () => {
+      gsap.to(cursor, { scale: 1, duration: 0.25, ease: 'power2.out' });
+      gsap.to(ring, { scale: 1, opacity: 1, duration: 0.25, ease: 'power2.out' });
+    });
+  });
 }
-animateRing();
-
-document.querySelectorAll('a, button').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    gsap.to(cursor, { scale: 3, duration: 0.3 });
-    gsap.to(ring, { scale: 1.5, opacity: 0.5, duration: 0.3 });
-  });
-  el.addEventListener('mouseleave', () => {
-    gsap.to(cursor, { scale: 1, duration: 0.3 });
-    gsap.to(ring, { scale: 1, opacity: 1, duration: 0.3 });
-  });
-});
 
 // ── GSAP + ScrollTrigger ANIMATIONS
 gsap.registerPlugin(ScrollTrigger);
@@ -886,7 +949,6 @@ heroTl
   .to('.hero-title', { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' }, '-=0.7')
   .to('.hero-subtitle', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, '-=0.8')
   .to('.hero-actions', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.7')
-  .to('.hero-phone', { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'power3.out' }, '-=0.9')
   .to('.scroll-hint', { opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.2');
 
 // Section label + title scroll animations
@@ -921,12 +983,113 @@ gsap.utils.toArray('.spec-row').forEach((row, i) => {
   });
 });
 
-// Phone 2 parallax
-gsap.to('.phone-shell-2', {
-  yPercent: -20,
-  ease: 'none',
-  scrollTrigger: { trigger: '#specs', start: 'top bottom', end: 'bottom top', scrub: 1.5 }
-});
+// ── TRAVELING PHONE
+// Das Handy verlässt nicht den Bildschirm: es scrollt geradeaus mit nach unten
+// und landet im Specs-Bereich im rechten Slot (.phone-target).
+(function setupTravelingPhone() {
+  const phone     = document.querySelector('.hero-phone');
+  const slot      = document.querySelector('.hero-phone-slot');
+  const target    = document.querySelector('.phone-target');
+  if (!phone || !slot || !target) return;
+
+  const mqDesktop = window.matchMedia('(min-width: 901px)');
+  const phoneWidth = 260;
+
+  let startDoc, endDoc, startScroll, endScroll, enabled = false;
+
+  function measure() {
+    enabled = mqDesktop.matches;
+    if (!enabled) {
+      phone.style.transform = '';
+      return;
+    }
+    const sy = window.scrollY || window.pageYOffset || 0;
+
+    const sRect = slot.getBoundingClientRect();
+    startDoc = {
+      cx: sRect.left + sRect.width  / 2,
+      cy: sRect.top  + sRect.height / 2 + sy,
+      w:  sRect.width
+    };
+
+    const tRect = target.getBoundingClientRect();
+    endDoc = {
+      cx: tRect.left + tRect.width  / 2,
+      cy: tRect.top  + tRect.height / 2 + sy,
+      w:  tRect.width
+    };
+
+    // Übergang: startet wenn das Slot-Zentrum in die Mitte des Viewports kommt,
+    // endet wenn das Ziel-Slot-Zentrum in die Mitte des Viewports kommt.
+    const vc = window.innerHeight / 2;
+    startScroll = startDoc.cy - vc;
+    endScroll   = endDoc.cy   - vc;
+  }
+
+  function easeInOut(t) {
+    return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+  }
+
+  function update() {
+    if (!enabled) return;
+    const sy = window.scrollY || window.pageYOffset || 0;
+
+    let p;
+    if (sy <= startScroll)      p = 0;
+    else if (sy >= endScroll)   p = 1;
+    else                        p = (sy - startScroll) / (endScroll - startScroll);
+    const e = easeInOut(p);
+
+    // Interpolierte Dokument-Position (geradeaus zwischen Start und Ziel)
+    const docCx = startDoc.cx + (endDoc.cx - startDoc.cx) * e;
+    const docCy = startDoc.cy + (endDoc.cy - startDoc.cy) * e;
+
+    // Viewport-Position für position:fixed
+    const vpCx = docCx;
+    const vpCy = docCy - sy;
+
+    // Skalierung: Hero-Größe → Ziel-Größe
+    const startScale = 1;
+    const endScale   = endDoc.w / phoneWidth;
+    const scale = startScale + (endScale - startScale) * e;
+
+    // Leichte Drehung wie im alten Specs-Mockup (0deg → 5deg)
+    const rot = 5 * e;
+
+    // top:0/left:0 + translate von der Mitte nach (vpCx, vpCy)
+    const tx = vpCx - phoneWidth / 2;
+    const ty = vpCy - 530 / 2;
+
+    phone.style.transform =
+      `translate3d(${tx}px, ${ty}px, 0) rotate(${rot}deg) scale(${scale})`;
+  }
+
+  function refresh() {
+    measure();
+    update();
+  }
+
+  refresh();
+  requestAnimationFrame(() => {
+    phone.classList.add('is-ready');
+    refresh();
+  });
+
+  // Lenis und nativer Scroll feuern beide 'scroll' – ein rAF-Throttle reicht.
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  }, { passive: true });
+
+  window.addEventListener('resize', refresh);
+  window.addEventListener('load', refresh);
+  setTimeout(refresh, 300);
+  setTimeout(refresh, 1000);
+
+  mqDesktop.addEventListener?.('change', refresh);
+})();
 
 // Quote card
 gsap.to('.quote-glass', {
